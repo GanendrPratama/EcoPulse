@@ -1,0 +1,73 @@
+version: "3.8"
+
+services:
+  # ── Cassandra Database ──────────────────────────────────────────────
+  cassandra:
+    image: cassandra:latest
+    container_name: cassandra-node
+    ports:
+      - "9042:9042"
+    volumes:
+      - cassandra-data:/var/lib/cassandra
+    environment:
+      - CASSANDRA_CLUSTER_NAME=EcoPulseCluster
+      - CASSANDRA_DC=dc1
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+    healthcheck:
+      test: ["CMD-SHELL", "cqlsh -e 'describe cluster'"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+
+  # ── Schema Initializer (runs once) ──────────────────────────────────
+  cassandra-init:
+    image: cassandra:latest
+    container_name: cassandra-init
+    depends_on:
+      cassandra:
+        condition: service_healthy
+    volumes:
+      - ./init.cql:/init.cql
+      - ./scripts/init-cassandra.sh:/init-cassandra.sh
+    entrypoint: ["bash", "/init-cassandra.sh"]
+    restart: "no"
+
+  # ── Backend API ─────────────────────────────────────────────────────
+  backend:
+    build: ./backend
+    container_name: ecopulse-backend
+    ports:
+      - "3000:3000"
+    environment:
+      - CASSANDRA_HOST=cassandra
+      - PORT=3000
+    depends_on:
+      cassandra-init:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  # ── Sensor Simulator ────────────────────────────────────────────────
+  simulator:
+    build: ./simulator
+    container_name: ecopulse-simulator
+    environment:
+      - CASSANDRA_HOST=cassandra
+    depends_on:
+      cassandra-init:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  # ── Frontend Dashboard ──────────────────────────────────────────────
+  frontend:
+    build: ./frontend
+    container_name: ecopulse-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  cassandra-data:
+    driver: local

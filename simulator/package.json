@@ -1,0 +1,12 @@
+{
+  "name": "ecopulse-simulator",
+  "version": "1.0.0",
+  "description": "IoT sensor data simulator for EcoPulse",
+  "main": "seed.js",
+  "scripts": {
+    "start": "node seed.js"
+  },
+  "dependencies": {
+    "cassandra-driver": "^4.7.2"
+  }
+}
