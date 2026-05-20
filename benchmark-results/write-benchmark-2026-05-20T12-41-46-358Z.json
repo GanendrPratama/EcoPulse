@@ -1,0 +1,37 @@
+{
+  "benchmark": "cassandra_write_throughput",
+  "created_at": "2026-05-20T12:41:46.347Z",
+  "config": {
+    "database": "Apache Cassandra",
+    "host": "cassandra",
+    "datacenter": "dc1",
+    "keyspace": "ecopulse",
+    "consistency": "LOCAL_ONE",
+    "total_records": 10000,
+    "concurrency": 100,
+    "sensor_count": 100,
+    "warmup_records": 200
+  },
+  "summary": {
+    "success_count": 10000,
+    "error_count": 0,
+    "total_duration_ms": 852.459,
+    "throughput_writes_per_second": 11730.77,
+    "error_rate_percent": 0
+  },
+  "latency": {
+    "min_ms": 1.257,
+    "avg_ms": 8.27,
+    "p50_ms": 6.81,
+    "p90_ms": 15.121,
+    "p95_ms": 18.649,
+    "p99_ms": 26.724,
+    "max_ms": 44.77
+  },
+  "error_samples": [],
+  "interpretation": {
+    "write_heavy_workload": "Semakin tinggi throughput writes/second dengan error rate rendah, semakin baik database menangani beban sensor IoT yang terus menulis data.",
+    "consistency_tradeoff": "Coba bandingkan CASSANDRA_CONSISTENCY=LOCAL_ONE, ONE, LOCAL_QUORUM, QUORUM, dan ALL. Consistency yang lebih kuat biasanya menambah latency.",
+    "nosql_relevance": "Cassandra cocok untuk time-series write-heavy karena data bisa dipartisi berdasarkan sensor_id dan ditulis secara paralel tanpa JOIN."
+  }
+}

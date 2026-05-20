@@ -1,0 +1,14 @@
+{
+  "name": "ecopulse-benchmark",
+  "version": "1.0.0",
+  "description": "Cassandra benchmark scripts for EcoPulse NoSQL mini project",
+  "main": "benchmark-write.js",
+  "scripts": {
+    "benchmark:write": "node benchmark-write.js",
+    "benchmark:read": "node benchmark-read.js",
+    "benchmark:report": "node benchmark-report.js"
+  },
+  "dependencies": {
+    "cassandra-driver": "^4.7.2"
+  }
+}
