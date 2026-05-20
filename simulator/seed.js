@@ -61,9 +61,9 @@ async function insertReading(reading) {
 
 // ── Main simulation loop ─────────────────────────────────────────────
 async function simulate() {
-    console.log("🌿 EcoPulse Simulator starting...");
+    console.log("EcoPulse Simulator starting...");
     await client.connect();
-    console.log("✅ Connected to Cassandra");
+    console.log("Connected to Cassandra");
 
     const tick = async () => {
         // Pick a random sensor for this tick
@@ -81,7 +81,7 @@ async function simulate() {
                 `Battery: ${reading.battery_status}%`
             );
         } catch (err) {
-            console.error(`❌ Error inserting for ${sensorId}:`, err.message);
+            console.error(`Error inserting for ${sensorId}:`, err.message);
         }
 
         // Schedule next tick in 2-5 seconds
