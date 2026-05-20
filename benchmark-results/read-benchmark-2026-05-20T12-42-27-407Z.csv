@@ -1,0 +1,30 @@
+metric,value
+benchmark,cassandra_read_history_latency
+created_at,2026-05-20T12:42:27.399Z
+config.database,Apache Cassandra
+config.host,cassandra
+config.datacenter,dc1
+config.keyspace,ecopulse
+config.consistency,LOCAL_ONE
+config.total_queries,2000
+config.concurrency,100
+config.sensor_count,100
+config.history_limit,50
+summary.success_count,2000
+summary.error_count,0
+summary.rows_returned,100000
+summary.avg_rows_per_query,50
+summary.total_duration_ms,681.479
+summary.throughput_reads_per_second,2934.79
+summary.error_rate_percent,0
+latency.min_ms,6.27
+latency.avg_ms,33.105
+latency.p50_ms,25.721
+latency.p90_ms,58.986
+latency.p95_ms,79.997
+latency.p99_ms,191.179
+latency.max_ms,201.662
+error_samples,
+interpretation.query_pattern,Read benchmark ini menguji pola query utama Cassandra: mencari history berdasarkan partition key sensor_id.
+interpretation.partition_key,"Query cepat terjadi karena WHERE sensor_id = ? memakai partition key, bukan scan seluruh tabel."
+interpretation.limitation,Cassandra tidak fleksibel seperti SQL untuk query ad-hoc. Query harus mengikuti desain primary key dan query pattern sejak awal.

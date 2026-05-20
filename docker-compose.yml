@@ -58,6 +58,28 @@ services:
         condition: service_completed_successfully
     restart: unless-stopped
 
+
+  # ── Cassandra Benchmark Runner ─────────────────────────────────────
+  benchmark:
+    build: ./scripts
+    container_name: ecopulse-benchmark
+    profiles:
+      - benchmark
+    environment:
+      - CASSANDRA_HOST=cassandra
+      - CASSANDRA_KEYSPACE=ecopulse
+      - CASSANDRA_DATACENTER=dc1
+      - CASSANDRA_CONSISTENCY=LOCAL_ONE
+      - BENCHMARK_RECORDS=10000
+      - BENCHMARK_QUERIES=2000
+      - BENCHMARK_CONCURRENCY=100
+      - BENCHMARK_SENSOR_COUNT=100
+    volumes:
+      - ./benchmark-results:/app/benchmark-results
+    depends_on:
+      cassandra-init:
+        condition: service_completed_successfully
+
   # ── Frontend Dashboard ──────────────────────────────────────────────
   frontend:
     build: ./frontend
