@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-// import axios from "axios"; // Tim backend akan membuka ini nanti
+import axios from "axios";
 import {
   LineChart,
   Line,
@@ -12,7 +12,7 @@ import {
   Cell
 } from "recharts";
 
-// const API = "/api"; 
+const API = "/api";
 
 const SENSORS = [
   "JKT-AQI-001",
@@ -63,8 +63,8 @@ export default function App() {
 
   const fetchLatest = async () => {
     try {
-      const data = generateMockLatest(); 
-      setLatest(data);
+      const res = await axios.get(`${API}/sensors/latest`);
+      setLatest(res.data.data);
     } catch (e) {
       console.error("Failed to fetch latest:", e);
     }
@@ -72,8 +72,8 @@ export default function App() {
 
   const fetchHistory = async (sensorId) => {
     try {
-      const data = generateMockHistory(); 
-      setHistory((prev) => ({ ...prev, [sensorId]: data }));
+      const res = await axios.get(`${API}/sensors/${sensorId}/history`);
+      setHistory((prev) => ({ ...prev, [sensorId]: res.data.data }));
     } catch (e) {
       console.error("Failed to fetch history:", e);
     }
@@ -109,7 +109,7 @@ export default function App() {
 
   return (
     <div className="flex h-screen bg-[#f4f7f6] font-sans text-gray-800">
-      
+
       {/* --- SIDEBAR --- */}
       <aside className="w-64 bg-white border-r border-gray-200 flex flex-col px-6 py-8">
         <div className="flex items-center gap-2 mb-10 text-2xl font-bold text-[#165d3b]">
@@ -133,7 +133,7 @@ export default function App() {
         {/* Promo / App Download Card (Mimicking the dark card in the reference) */}
         <div className="bg-[#0f241a] text-white p-5 rounded-2xl relative overflow-hidden mt-auto">
           <div className="relative z-10">
-            <h4 className="font-bold mb-1 text-sm">Download our<br/>Mobile App</h4>
+            <h4 className="font-bold mb-1 text-sm">Download our<br />Mobile App</h4>
             <p className="text-[10px] text-gray-300 mb-4">Monitor sensors anywhere</p>
             <button className="bg-[#165d3b] text-white text-xs px-4 py-2 rounded-lg font-medium w-full">Download</button>
           </div>
@@ -142,13 +142,13 @@ export default function App() {
 
       {/* --- MAIN CONTENT --- */}
       <main className="flex-1 flex flex-col overflow-y-auto">
-        
+
         {/* HEADER */}
         <header className="flex justify-between items-center px-10 py-6 bg-white/50 backdrop-blur-sm sticky top-0 z-10">
           <div className="relative w-96">
-            <input 
-              type="text" 
-              placeholder="Search sensor ID..." 
+            <input
+              type="text"
+              placeholder="Search sensor ID..."
               className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-[#165d3b]/20"
             />
             <span className="absolute left-4 top-3 text-gray-400">🔍</span>
@@ -167,7 +167,7 @@ export default function App() {
 
         {/* DASHBOARD CONTENT */}
         <div className="p-10 max-w-7xl mx-auto w-full flex flex-col gap-6">
-          
+
           {/* Title Row */}
           <div className="flex justify-between items-end mb-2">
             <div>
@@ -238,7 +238,7 @@ export default function App() {
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={chartData}>
                     <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9ca3af' }} dy={10} />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                       cursor={{ stroke: '#f3f4f6', strokeWidth: 2 }}
                     />
@@ -253,21 +253,21 @@ export default function App() {
               <div>
                 <h3 className="font-bold text-lg mb-1">System Status</h3>
                 <p className="text-sm text-gray-500 mb-6">Monitoring Cassandra DB</p>
-                
+
                 <div className="bg-green-50 p-4 rounded-2xl mb-4 border border-green-100">
                   <div className="font-bold text-[#165d3b] mb-1">Database Sync</div>
                   <div className="text-xs text-[#165d3b]/80">Connected: Localhost 8080</div>
                 </div>
               </div>
               <button className="w-full py-3 bg-[#165d3b] text-white rounded-xl font-medium flex justify-center items-center gap-2 hover:bg-[#114a2f] transition-colors">
-                 Refresh Connection
+                Refresh Connection
               </button>
             </div>
           </div>
 
           {/* BOTTOM ROW */}
           <div className="grid grid-cols-3 gap-6">
-            
+
             {/* Sensor List (Mimicking Team Collaboration) */}
             <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
               <div className="flex justify-between items-center mb-6">
@@ -277,8 +277,8 @@ export default function App() {
               <div className="flex flex-col gap-4">
                 {latest.slice(0, 4).map((sensor, idx) => (
                   <div key={sensor.sensor_id} className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm" style={{ backgroundColor: ['#fee2e2', '#dcfce7', '#e0e7ff', '#fef3c7'][idx%4], color: ['#991b1b', '#166534', '#3730a3', '#92400e'][idx%4] }}>
-                      S{idx+1}
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm" style={{ backgroundColor: ['#fee2e2', '#dcfce7', '#e0e7ff', '#fef3c7'][idx % 4], color: ['#991b1b', '#166534', '#3730a3', '#92400e'][idx % 4] }}>
+                      S{idx + 1}
                     </div>
                     <div className="flex-1">
                       <div className="text-sm font-bold">{sensor.sensor_id}</div>
@@ -333,7 +333,7 @@ export default function App() {
               <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at top right, #4ade80, transparent 40%)' }}></div>
               <h3 className="font-bold text-lg mb-1 relative z-10">System Uptime</h3>
               <p className="text-xs text-white/70 mb-auto relative z-10">Last database write operation</p>
-              
+
               <div className="relative z-10 flex flex-col items-center justify-center flex-1">
                 <div className="text-5xl font-light font-mono tracking-wider mb-2">
                   {new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
