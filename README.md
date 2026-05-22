@@ -23,7 +23,8 @@ This project was developed for a NoSQL Mini Project using the following stack:
 7. [How to Run the Project](#how-to-run-the-project)
 8. [API Endpoints](#api-endpoints)
 9. [Data Simulator](#data-simulator)
-10. [External Code, Datasets, and Third-Party Tools](#external-code-datasets-and-third-party-tools)
+10. [Benchmark: Cassandra vs PostgreSQL](#benchmark-cassandra-vs-postgresql)
+11. [External Code, Datasets, and Third-Party Tools](#external-code-datasets-and-third-party-tools)
 11. [AI Assistance Disclosure](#ai-assistance-disclosure)
 12. [Individual Contributions](#individual-contributions)
 13. [Known Issues and Troubleshooting](#known-issues-and-troubleshooting)
@@ -340,6 +341,92 @@ The simulator inserts a new reading every 2-5 seconds.
 
 ---
 
+## Benchmark: Cassandra vs PostgreSQL
+
+This section presents the results of a write and read performance benchmark comparing **Apache Cassandra** (used in EcoPulse) against **PostgreSQL** (a traditional relational database) under the same workload conditions.
+
+The goal of this benchmark is to validate the technology choice of using Cassandra for a high write-throughput, time-series sensor data workload.
+
+---
+
+### Benchmark Configuration
+
+Both databases were tested using the same parameters.
+
+#### Write Benchmark Configuration
+
+| Parameter | Value |
+|---|---:|
+| total_records | 10,000 |
+| concurrency | 100 |
+| sensor_count | 100 |
+| warmup_records | 200 |
+
+#### Read Benchmark Configuration
+
+| Parameter | Value |
+|---|---:|
+| total_queries | 2,000 |
+| concurrency | 100 |
+| sensor_count | 100 |
+| history_limit | 50 |
+
+#### PostgreSQL Configuration
+
+| Parameter | Value |
+|---|---|
+| version | PostgreSQL 16.14 |
+| host | postgres |
+| port | 5432 |
+| db_name | ecopulse |
+| pool_max | 100 |
+| synchronous_commit | on |
+
+#### Cassandra Configuration
+
+| Parameter | Value |
+|---|---|
+| host | cassandra |
+| datacenter | dc1 |
+| keyspace | ecopulse |
+| consistency | LOCAL_ONE |
+
+---
+
+### Write Performance Results & Write Latency Distribution (ms)
+
+![image](https://hackmd.io/_uploads/r1xiSJhkMe.png)
+
+
+**Analysis:** Cassandra completed 10,000 writes with zero errors in 852ms, achieving a throughput of ~11,730 writes/sec — roughly **2.5× faster** than PostgreSQL. PostgreSQL also had 33 errors (0.33% error rate) and a significantly higher p99 and max latency, indicating occasional slowdowns under concurrent write load.
+
+---
+
+### Read Performance Results & Read Latency Distribution (ms)
+
+![image](https://hackmd.io/_uploads/H1a1UJhJMg.png)
+
+**Analysis:** Cassandra completed 2,000 reads with zero errors, achieving ~2,934 reads/sec — roughly **2.1× faster** than PostgreSQL. PostgreSQL had 10 read errors and significantly higher tail latencies (p99: 782ms vs 191ms), which in a production environment would directly impact dashboard responsiveness.
+
+---
+
+### Summary
+
+| Aspect | PostgreSQL | Cassandra | Winner |
+|---|---|---|---|
+| Write throughput | 4,627 writes/sec | 11,730 writes/sec |  Cassandra |
+| Write error rate | 0.33% | 0% | Cassandra |
+| Read throughput | 1,395 reads/sec | 2,934 reads/sec | Cassandra |
+| Read error rate | 0.5% | 0% | Cassandra |
+| Write p99 latency | 63.8 ms | 26.7 ms | Cassandra |
+| Read p99 latency | 782.8 ms | 191.2 ms | Cassandra |
+
+These results confirm that Apache Cassandra is the more suitable database for the EcoPulse use case, particularly for high-volume, concurrent IoT sensor writes and low-latency time-series reads, consistent with the design goals described in the Database Design section.
+
+> **Note:** This benchmark was conducted in a local Docker environment with a single-node Cassandra cluster (`replication_factor: 1`). In a real distributed multi-node deployment, Cassandra's performance advantage over relational databases is expected to be even more pronounced.
+
+---
+
 ## External Code, Datasets, and Third-Party Tools
 
 This section is included to comply with the academic requirement that all external code, datasets, and third-party tools must be credited.
@@ -466,4 +553,3 @@ Update this section with the final verified contribution of each member before s
 
 
 ---
-
